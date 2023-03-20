@@ -81,7 +81,6 @@ do {
     } until ($Verify -eq "y")
 
 #Gathers credentials for Remote PSSession
-Enable-PSRemoting
 $Username = Read-Host "Please enter your admin username"
 $RemotePassword = Read-Host "Enter password" -AsSecureString
 [pscredential]$Credential = New-Object System.Management.Automation.PSCredential($Username, $RemotePassword) #Create credential object
@@ -111,63 +110,3 @@ try{
             Pause
         }
     }
-Disable-PSRemoting
-
-#Asks if Inventor is needed, which version is needed, and runs corresponding script
-$CAD = Read-Host "Do you need to install Inventor? [y/n]"
-
-if ($CAD -eq "y") {
-    New-PSDrive -Name "X" -PSProvider "FileSystem" -Root "\\corp-fp-01\Autodesk Deployments\2021\Batch Files" -Credential $Credential  -Persist
-    do {
-        Write-CAD
-        $Version = Read-Host "Which version of CAD would you like to install?"
-
-        switch ($Version) {
-            1 {$Install =  "AutoCAD Mechanical_Inventor_Vault.bat"}
-            2 {$Install = "AutoCAD_Inventor_Vault.bat"}
-            3 {$Install = "Inventor_Vault.bat"}
-        }
-        $Verify = Read-Host "Is $Install the version you want to install? [y/n]"
-    } until ($Verify -eq "y")
-}
-
-Set-Location X:\
-
-if ($Install -eq "AutoCAD Mechanical_Inventor_Vault.bat") {
-    cmd.exe /c '.\AutoCAD Mechanical_Inventor_Vault.bat'
-}
-if ($Install -eq "AutoCAD_Inventor_Vault.bat") {
-    cmd.exe /c '.\AutoCAD_Inventor_Vault.bat'
-}
-if ($Install -eq "Inventor_Vault.bat") {
-    cmd.exe /c '.\Inventor_Vault.bat'
-}
-    
-Remove-PSDrive -Name X
-
-#Installs Windows Update PowerShell Module and runs Windows Updates after OU has been moved
-try {
-    [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12 #Force TLS1.2
-    Install-PackageProvider -Name NuGet -MinimumVersion 2.8.5.201 -Force #Installs NuGet so that the module can install
-    Install-Module -Name PSWindowsUpdate -Force -confirm:$False #Installs the module
-    Import-Module -Name PSWindowsUpdate -ErrorAction Stop #Import the update module
-}
-catch {
-    Write-Host "PSWindowsUpdate Could not install"
-}
-
-try {
-    Install-WindowsUpdate  -AcceptAll -MicrosoftUpdate -forceInstall -Ignorereboot -Confirm:$false -ErrorAction Continue #Install all updates, continues on error
-}
-catch {
-    Write-Host Windows Updates have failed 
-}
-
-#Sets Execution Policy to RemoteSigned
-Set-ExecutionPolicy RemoteSigned
-
-#Removes script files from local machine
-Remove-Item C:\Scripts\Click-Me.bat
-Remove-Item C:\Users\Public\Desktop\Click-Me.bat
-Remove-Item C:\Users\Public\Desktop\Step1.bat
-Remove-Item C:\Scripts\Pre-Deploy.ps1
