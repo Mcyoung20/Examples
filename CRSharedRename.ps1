@@ -28,7 +28,6 @@ foreach ($row in $csvData) {
     $newName = $row.NewName
 
     $oldFolderPath = Join-Path -Path $baseDirectory -ChildPath $oldName
-    $newFolderPath = Join-Path -Path $baseDirectory -ChildPath $newName
 
     if (Test-Path -Path $oldFolderPath -PathType Container) {
         try {
