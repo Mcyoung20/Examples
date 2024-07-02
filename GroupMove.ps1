@@ -3,7 +3,7 @@ $OldGroup = ""
 $TargetGroup = ""
 
 $LogServer = ""
-#Sets up logging with function to add desired timestamped text
+#Sets up logging with a function to add desired timestamped text
 New-Item $LogServer\GroupMove.log
 $Logfile = "$LogServer\GroupMove.log"
 function Write-Log
@@ -17,17 +17,17 @@ function Write-Log
 #Attempts to create an array of all users in $OldGroup
 try {
     $OldGroupUsers = Get-ADGroupMember "$OldGroup"
-    Write-Log "Generating list of AD Users and writing to $OldGroup Array"
+    Write-Log "Generating a list of AD Users and writing to $OldGroup Array."
     $Success = $true
 }
 catch {
-    Write-Log "Unable to create array."
+    Write-Log "Unable to create the $OldGroup array."
     $Success = $false
     exit
 }
 
 if ($Success -eq $true) {
-    Write-Log "Succesfully created $OldGroup Array"
+    Write-Log "Successfully created $OldGroup Array"
 }
 
 #Creates a CSV of the existing Target group for restoration purposes
@@ -52,19 +52,19 @@ foreach ($User in $OldGroupUsers){
         #Adds move status as a property to the object
         $Attempt | Add-Member -MemberType NoteProperty -Name Status -Value "Failed" -Force
         
-        #Sets up table for CSV log, then exports the log
+        #Sets up a table for CSV log, then exports the log
         $CSVTable = $Attempt | Select-Object name,SAMAccountName,Status
         $CSVTable | Export-Csv $LogServer\SuccessLog.csv -Append
         continue
     }
     
     if ($Success -eq $true) {
-        Write-Log "Sucessfully added $SAM to $TargetGroup"
+        Write-Log "Successfully added $SAM to $TargetGroup"
         
         #Adds move status as a property to the object
-        $Attempt | Add-Member -MemberType NoteProperty -Name Status -Value "Moved Succesfully" -Force
+        $Attempt | Add-Member -MemberType NoteProperty -Name Status -Value "Moved Successfully" -Force
         
-        #Sets up table for CSV log, then exports the log
+        #Sets up a table for CSV log, then exports the log
         $CSVTable = $Attempt | Select-Object name,SAMAccountName,Status
         $CSVTable | Export-Csv $LogServer\SuccessLog.csv -Append
         continue
