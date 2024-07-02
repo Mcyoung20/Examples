@@ -1,5 +1,5 @@
 # Set the log file path
-$Logfile = "\\corp-rs-01\it\young\CRSharedRename.log"
+$Logfile = "<PATH_TO_LOG>.log"
 
 # Define the Write-Log function to add timestamped text to the log file
 function Write-Log {
