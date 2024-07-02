@@ -1,4 +1,4 @@
-#Sets up logging with function to add desired timestamped text
+#Sets up logging with a function to add desired timestamped text
 mkdir C:\Drivers\Logs
 New-Item C:\Drivers\Logs\BitLocker.log
 $Logfile = "C:\Drivers\Logs\BitLocker.log"
@@ -17,9 +17,9 @@ $Status = 0
 #Creates an array for Get-TPM
 $TPMStatus = Get-Tpm
 
-#This section of the code tests to make sure that there is a PC installed on the TPM and whether it is initialized.
-#If the TPM is not initialized the script will attempt to initialize it twice until it is either initialized succesfully or fails.
-#The script shecks to see how many times the script looped before moving on and determines whether or not to continue enabling BitLocker.
+#This section of the code tests to ensure a TPM is installed on the PC and whether it is initialized.
+#If the TPM is not initialized, the script will attempt to initialize it twice until it is either initialized successfully or fails.
+#The script checks to see how many times the script looped before moving on and determines whether or not to continue enabling BitLocker.
 if ($TPMStatus.TpmPresent -ne "True")
     {
         Write-Log "There is no TPM installed on this computer, so BitLocker cannot be enabled."
@@ -41,13 +41,13 @@ if (($TPMStatus.TPMReady -ne "true") -and ($TPMStatus.TpmPresent -eq "true") -an
     }
 if ($Count -eq 2) 
     {
-        Write-Log "Failed to Intialize TPM. BitLocker cannot be enabled on this computer."
+        Write-Log "Failed to Initialize TPM. BitLocker cannot be enabled on this computer."
     }
 else 
     {
         try 
             {
-                Write-Log "TPM initialized succesfully. Attempting to enable BitLocker..."
+                Write-Log "TPM initialized successfully. Attempting to enable BitLocker..."
                 Enable-BitLocker -MountPoint "C:" -EncryptionMethod XtsAes256 -TpmProtector
             }
         catch 
@@ -57,9 +57,9 @@ else
     }
 if ($Status -eq 1) 
     {
-        Write-Log "BitLocker Failed to enable. Please run BitLocker setup manually"
+        Write-Log "BitLocker Failed to enable. Please run BitLocker setup manually."
     }
 if ($Status = 0) 
     {
-        Write-Log "BitLocker enabled succesfully."
+        Write-Log "BitLocker enabled successfully."
     }
